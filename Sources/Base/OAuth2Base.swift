@@ -348,12 +348,14 @@ open class OAuth2Base: OAuth2Securable {
 	- returns: An OAuth2JSON instance with token data; may contain additional information
 	*/
 	public final func parseAccessTokenResponse(params: OAuth2JSON) throws -> OAuth2JSON {
-		try assureNoErrorInResponse(params)
-		try assureCorrectBearerType(params)
-		try assureAccessTokenParamsAreValid(params)
+		let normalized_params = try normalizeAccessTokenResponseKeys(params)
+
+		try assureNoErrorInResponse(normalized_params)
+		try assureCorrectBearerType(normalized_params)
+		try assureAccessTokenParamsAreValid(normalized_params)
 		
-		clientConfig.updateFromResponse(normalizeAccessTokenResponseKeys(params))
-		return params
+		clientConfig.updateFromResponse(normalized_params)
+		return normalized_params
 	}
 	
 	/**
@@ -363,7 +365,7 @@ open class OAuth2Base: OAuth2Securable {
 	- parameter dict: The dictionary that was returned from an access token response
 	- returns: The dictionary with fixed key names
 	*/
-	open func normalizeAccessTokenResponseKeys(_ dict: OAuth2JSON) -> OAuth2JSON {
+	open func normalizeAccessTokenResponseKeys(_ dict: OAuth2JSON) throws -> OAuth2JSON {
 		return dict
 	}
 	
@@ -392,12 +394,14 @@ open class OAuth2Base: OAuth2Securable {
 	- returns: An OAuth2JSON instance with token data; may contain additional information
 	*/
 	final func parseRefreshTokenResponse(_ dict: OAuth2JSON) throws -> OAuth2JSON {
-		try assureNoErrorInResponse(dict)
-		try assureCorrectBearerType(dict)
-		try assureRefreshTokenParamsAreValid(dict)
+		let normalized_params = try normalizeRefreshTokenResponseKeys(dict)
+
+		try assureNoErrorInResponse(normalized_params)
+		try assureCorrectBearerType(normalized_params)
+		try assureRefreshTokenParamsAreValid(normalized_params)
 		
-		clientConfig.updateFromResponse(normalizeRefreshTokenResponseKeys(dict))
-		return dict
+		clientConfig.updateFromResponse(normalized_params)
+		return normalized_params
 	}
 	
 	/**
@@ -407,7 +411,7 @@ open class OAuth2Base: OAuth2Securable {
 	- parameter dict: The dictionary that was returned from a refresh token response
 	- returns: The dictionary with fixed key names
 	*/
-	open func normalizeRefreshTokenResponseKeys(_ dict: OAuth2JSON) -> OAuth2JSON {
+	open func normalizeRefreshTokenResponseKeys(_ dict: OAuth2JSON) throws -> OAuth2JSON {
 		return dict
 	}
 	
