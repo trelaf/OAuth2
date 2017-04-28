@@ -222,8 +222,9 @@ open class OAuth2AuthRequest {
 			}
 		}
 		if let customParameters = oauth2.clientConfig.customParameters {
-			for (k, v) in customParameters {
-				finalParams[k] = v
+			for (key, value) in customParameters {
+				oauth2.logger?.trace("OAuth2", msg: "Adding custom “\(key)” parameter")
+				finalParams[key] = value
 			}
 		}
 		// add a body to POST requests

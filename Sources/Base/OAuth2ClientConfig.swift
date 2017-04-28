@@ -61,7 +61,10 @@ open class OAuth2ClientConfig {
 	
 	/// Whether the receiver should use the request body instead of the Authorization header for the client secret; defaults to `false`.
 	public var secretInBody = false
-	
+
+	/// Weather the nonce should be sent on auth and tokens requests
+	public var requireNonce = false
+
 	/// How the client communicates the client secret with the server. Defaults to ".None" if there is no secret, ".clientSecretPost" if
 	/// "secret_in_body" is `true` and ".clientSecretBasic" otherwise. Interacts with the `secretInBody` setting.
 	public final var endpointAuthMethod = OAuth2EndpointAuthMethod.none
@@ -121,6 +124,9 @@ open class OAuth2ClientConfig {
 		}
 		if let inBody = settings["secret_in_body"] as? Bool {
 			secretInBody = inBody
+		}
+		if let reqNonce = settings["require_nonce"] as? Bool {
+			requireNonce = reqNonce
 		}
 		if secretInBody {
 			endpointAuthMethod = .clientSecretPost

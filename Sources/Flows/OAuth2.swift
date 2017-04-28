@@ -278,6 +278,9 @@ open class OAuth2: OAuth2Base {
 		if let customParams = clientConfig.customParameters {
 			req.add(params: customParams)
 		}
+		if clientConfig.requireNonce {
+			req.params["nonce"] = context.nonce
+		}
 
 		req.add(params: params)
 		

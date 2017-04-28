@@ -32,24 +32,24 @@ exchange and token refresh flows, **if** the client has a secret, a "Basic key:s
 key will be embedded into the request body.
 */
 open class OAuth2CodeGrant: OAuth2 {
-	
+
 	override open class var grantType: String {
 		return "authorization_code"
 	}
-	
+
 	override open class var responseType: String? {
 		return "code"
 	}
-	
-	
+
+
 	// MARK: - Token Request
-	
+
 	/**
 	Generate the request to be used for the token request from known instance variables and supplied parameters.
-	
+
 	This will set "grant_type" to "authorization_code", add the "code" provided and fill the remaining parameters. The "client_id" is only
 	added if there is no secret (public client) or if the request body is used for id and secret.
-	
+
 	- parameter code: The code you want to exchange for an access token
 	- parameter params: Optional additional params to add as URL parameters
 	- returns: A request you can use to create a URL request to exchange the code for an access token
@@ -61,16 +61,16 @@ open class OAuth2CodeGrant: OAuth2 {
 		guard let redirect = context.redirectURL else {
 			throw OAuth2Error.noRedirectURL
 		}
-		
+
 		let req = OAuth2AuthRequest(url: (clientConfig.tokenURL ?? clientConfig.authorizeURL))
 		req.params["code"] = code
 		req.params["grant_type"] = type(of: self).grantType
 		req.params["redirect_uri"] = redirect
 		req.params["client_id"] = clientId
-		
+
 		return req
 	}
-	
+
 	/**
 	Extracts the code from the redirect URL and exchanges it for a token.
 	*/
@@ -84,10 +84,10 @@ open class OAuth2CodeGrant: OAuth2 {
 			didFail(with: error.asOAuth2Error)
 		}
 	}
-	
+
 	/**
 	Takes the received code and exchanges it for a token.
-	
+
 	Uses `accessTokenRequest(params:)` to create the request, which you can subclass to change implementation specifics.
 	*/
 	public func exchangeCodeForToken(_ code: String) {
@@ -95,10 +95,10 @@ open class OAuth2CodeGrant: OAuth2 {
 			guard !code.isEmpty else {
 				throw OAuth2Error.prerequisiteFailed("I don't have a code to exchange, let the user authorize first")
 			}
-			
+
 			let post = try accessTokenRequest(with: code).asURLRequest(for: self)
 			logger?.debug("OAuth2", msg: "Exchanging code \(code) for access token at \(post.url!)")
-			
+
 			perform(request: post) { response in
 				do {
 					let data = try response.responseData()
@@ -118,10 +118,10 @@ open class OAuth2CodeGrant: OAuth2 {
 			didFail(with: error.asOAuth2Error)
 		}
 	}
-	
-	
+
+
 	// MARK: - Utilities
-	
+
 	/**
 	Validates the redirect URI: returns a tuple with the code and nil on success, nil and an error on failure.
 	*/
@@ -137,7 +137,7 @@ open class OAuth2CodeGrant: OAuth2 {
 			let query = OAuth2CodeGrant.params(fromQuery: comp!.percentEncodedQuery!)
 			try assureNoErrorInResponse(query as OAuth2JSON)
 			if let cd = query["code"] {
-				
+
 				// we got a code, use it if state is correct (and reset state)
 				try assureMatchesState(query as OAuth2JSON)
 				return cd

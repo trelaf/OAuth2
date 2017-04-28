@@ -45,7 +45,7 @@ public enum OAuth2Error: Error, CustomStringConvertible, Equatable {
 	
 	/// There is no client secret.
 	case noClientSecret
-	
+
 	/// There is no redirect URL.
 	case noRedirectURL
 	

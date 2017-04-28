@@ -353,7 +353,8 @@ open class OAuth2Base: OAuth2Securable {
 		try assureNoErrorInResponse(normalized_params)
 		try assureCorrectBearerType(normalized_params)
 		try assureAccessTokenParamsAreValid(normalized_params)
-		
+		try assureIDTokenIsValid(normalized_params, nonce: context.nonce)
+
 		clientConfig.updateFromResponse(normalized_params)
 		return normalized_params
 	}
@@ -399,7 +400,7 @@ open class OAuth2Base: OAuth2Securable {
 		try assureNoErrorInResponse(normalized_params)
 		try assureCorrectBearerType(normalized_params)
 		try assureRefreshTokenParamsAreValid(normalized_params)
-		
+
 		clientConfig.updateFromResponse(normalized_params)
 		return normalized_params
 	}
@@ -453,6 +454,10 @@ open class OAuth2Base: OAuth2Securable {
 	*/
 	open func assureRefreshTokenParamsAreValid(_ params: OAuth2JSON) throws {
 	}
+
+	open func assureIDTokenIsValid(_ params: OAuth2JSON, nonce: String) throws {
+		context.resetNonce()
+	}
 }
 
 
@@ -466,6 +471,8 @@ open class OAuth2ContextStore {
 	
 	/// The current state.
 	internal var _state = ""
+
+	internal var _nonce = ""
 	
 	/**
 	The state sent to the server when requesting a token.
@@ -498,6 +505,18 @@ open class OAuth2ContextStore {
 	*/
 	func resetState() {
 		_state = ""
+	}
+
+	open var nonce: String {
+		if _nonce.isEmpty {
+			_nonce = UUID().uuidString
+			_nonce = _nonce[_nonce.startIndex..<_nonce.index(_nonce.startIndex, offsetBy: 8)]
+		}
+		return _nonce
+	}
+
+	func resetNonce() {
+		_nonce = ""
 	}
 }
 
