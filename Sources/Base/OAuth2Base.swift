@@ -348,12 +348,15 @@ open class OAuth2Base: OAuth2Securable {
 	- returns: An OAuth2JSON instance with token data; may contain additional information
 	*/
 	public final func parseAccessTokenResponse(params: OAuth2JSON) throws -> OAuth2JSON {
+		let nonce = context.nonce
+		context.resetNonce()
+
 		let normalized_params = try normalizeAccessTokenResponseKeys(params)
 
 		try assureNoErrorInResponse(normalized_params)
 		try assureCorrectBearerType(normalized_params)
 		try assureAccessTokenParamsAreValid(normalized_params)
-		try assureIDTokenIsValid(normalized_params, nonce: context.nonce)
+        try assureIDTokenParamsAreValid(normalized_params, nonce: nonce)
 
 		clientConfig.updateFromResponse(normalized_params)
 		return normalized_params
@@ -455,8 +458,11 @@ open class OAuth2Base: OAuth2Securable {
 	open func assureRefreshTokenParamsAreValid(_ params: OAuth2JSON) throws {
 	}
 
-	open func assureIDTokenIsValid(_ params: OAuth2JSON, nonce: String) throws {
-		context.resetNonce()
+
+	/**
+	Access to the nonce value in order to fully validate the ID token. Does nothing by default.
+	*/
+	open func assureIDTokenParamsAreValid(_ params: OAuth2JSON, nonce: String) throws {
 	}
 }
 
