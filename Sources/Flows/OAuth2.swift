@@ -223,7 +223,7 @@ open class OAuth2: OAuth2Base {
 	- parameter params: Additional parameters to pass to the authorize URL
 	- throws: UnableToOpenAuthorizeURL on failure
 	*/
-	final func doOpenAuthorizeURLInBrowser(params: OAuth2StringDict? = nil) throws {
+	public final func doOpenAuthorizeURLInBrowser(params: OAuth2StringDict? = nil) throws {
 		let url = try authorizeURL(params: params)
 		logger?.debug("OAuth2", msg: "Opening authorize URL in system browser: \(url)")
 		try authorizer.openAuthorizeURLInBrowser(url)
@@ -239,7 +239,7 @@ open class OAuth2: OAuth2Base {
 	- parameter with:   The configuration to be used; usually uses the instance's `authConfig`
 	- parameter params: Additional authorization parameters to supply during the OAuth dance
 	*/
-	final func doAuthorizeEmbedded(with config: OAuth2AuthConfig, params: OAuth2StringDict? = nil) throws {
+	public final func doAuthorizeEmbedded(with config: OAuth2AuthConfig, params: OAuth2StringDict? = nil) throws {
 		let url = try authorizeURL(params: params)
 		logger?.debug("OAuth2", msg: "Opening authorize URL embedded: \(url)")
 		try authorizer.authorizeEmbedded(with: config, at: url)
